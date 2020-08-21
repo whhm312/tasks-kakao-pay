@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="me.kakao.pay.luck.mapper.LuckDBMapper">
+
+<!-- 
+	<select id="listMap" resultType="com.example.map.prac.dto.MapDto">
+		select * from tbl_map
+	</select>
+ -->
+
+	<select id="selectNow" resultType="string">
+		SELECT DATE_FORMAT(NOW() , '%Y-%m-%d') AS NOW
+	</select>
+  
+	<insert id="insertBlessing" parameterType="me.kakao.pay.common.domain.Blessing">
+		INSERT INTO TBL_BLESSING (
+			BLESSER_ID, ROOM_ID, AMOUNT, MAX_RECEIVER_COUNT, BLESSING_DATE, TOKEN
+		) VALUES (
+			#{blesserId}, #{roomId}, #{amount}, #{maxReceiverCount}, NOW(), #{token}
+		)
+	</insert>
+</mapper>
