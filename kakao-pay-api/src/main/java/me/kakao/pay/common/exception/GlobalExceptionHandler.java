@@ -12,21 +12,24 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import me.kakao.pay.common.vo.ErrorResponse;
+import me.kakao.pay.common.vo.NotValiedResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(DuplicatedTokenException.class)
-	protected ResponseEntity<ErrorResponse> handleResourceNoContentException(DuplicatedTokenException e) {
+	protected ResponseEntity<ErrorResponse> handleDuplicatedTokenException(DuplicatedTokenException e) {
 		ErrorResponse reponse = new ErrorResponse();
-		List<String> errors = new ArrayList<>();
-		errors.add(e.getMessage());
+		reponse.setCode("E0001");
+		reponse.setMessage(e.getMessage());
 		return new ResponseEntity<>(reponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-		ErrorResponse reponse = new ErrorResponse();
+		NotValiedResponse reponse = new NotValiedResponse();
+		reponse.setCode("B0001");
+		reponse.setMessage("Not valid parameters' values.");
 		List<String> errors = new ArrayList<>();
 
 		BindingResult bindingResult = e.getBindingResult();
@@ -36,10 +39,13 @@ public class GlobalExceptionHandler {
 			builder.append(fieldError.getField());
 			builder.append("] ");
 			builder.append(fieldError.getDefaultMessage());
+			builder.append(" {");
+			builder.append(fieldError.getRejectedValue());
+			builder.append("}");
 			errors.add(builder.toString());
 			builder.setLength(0);
 		}
-		reponse.setErrors(errors);
+		reponse.setDetails(errors);
 
 		return new ResponseEntity<>(reponse, HttpStatus.BAD_REQUEST);
 	}
