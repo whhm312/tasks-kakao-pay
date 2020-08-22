@@ -17,8 +17,8 @@ import me.kakao.pay.common.vo.NotValiedResponse;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(DuplicatedTokenException.class)
-	protected ResponseEntity<ErrorResponse> handleDuplicatedTokenException(DuplicatedTokenException e) {
+	@ExceptionHandler(FailedCreateTokenException.class)
+	protected ResponseEntity<ErrorResponse> handleDuplicatedTokenException(FailedCreateTokenException e) {
 		ErrorResponse reponse = new ErrorResponse();
 		reponse.setCode("E0001");
 		reponse.setMessage(e.getMessage());

@@ -1,8 +1,5 @@
 package me.kakao.pay.luck.service;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class TokenGenerator {
 	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvxyz";
 

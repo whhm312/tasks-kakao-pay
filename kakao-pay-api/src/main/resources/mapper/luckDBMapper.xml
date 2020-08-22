@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="me.kakao.pay.luck.mapper.LuckDBMapper">
-
-<!-- 
-	<select id="listMap" resultType="com.example.map.prac.dto.MapDto">
-		select * from tbl_map
-	</select>
- -->
-
 	<select id="selectNow" resultType="string">
 		SELECT DATE_FORMAT(NOW() , '%Y-%m-%d') AS NOW
 	</select>
   
-	<insert id="insertLuck" parameterType="me.kakao.pay.common.domain.Luck">
+	<insert id="insertLuck" parameterType="me.kakao.pay.common.domain.Luck" useGeneratedKeys="true" keyProperty="seq">
 		INSERT INTO TBL_LUCK (
 			BLESSER_ID, ROOM_ID, 
 			AMOUNT, MAX_GRABBER_COUNT, 
@@ -24,12 +17,36 @@
 		)
 	</insert>
 	
+	<insert id="insertLuckDetail" parameterType="me.kakao.pay.common.domain.LuckDetail" useGeneratedKeys="true" keyProperty="seq">
+		INSERT INTO TBL_LUCK_DETAIL (
+			LUCK_SEQ, AMOUNT
+		) VALUES (
+			#{luckSeq}, #{amount}
+		)
+	</insert>
+	
 	<select id="countSameToken" parameterType="me.kakao.pay.common.domain.Luck" resultType="int">
 		SELECT COUNT(*) 
 		  FROM TBL_LUCK 
 		 WHERE TOKEN = #{token}
-		   AND BLESSER_ID = #{blesserId}
-		   AND ROOM_ID = #{roomId}
 		   AND BLESSING_DATE >= (CURDATE() - INTERVAL 7 DAY)
+		   AND ROOM_ID = #{roomId}
+		   AND BLESSER_ID = #{blesserId}
 	</select>
+	
+	<select id="selectLuck" parameterType="me.kakao.pay.common.domain.Luck" resultType="me.kakao.pay.common.domain.Luck">
+		SELECT 
+		  SEQ, BLESSER_ID, ROOM_ID , AMOUNT, 
+		  MAX_GRABBER_COUNT, BLESSING_DATE, TOKEN
+		  FROM TBL_LUCK 
+		 WHERE TOKEN = #{token} 
+		   AND BLESSING_DATE >= (CURDATE() - INTERVAL 7 DAY)
+		   AND ROOM_ID = #{roomId} 
+		   AND BLESSER_ID = #{blesserId}
+	</select>
+
+	<select id="selectLuckDetail" parameterType="me.kakao.pay.common.domain.Luck" resultType="me.kakao.pay.common.domain.LuckDetail">
+		SELECT * FROM TBL_LUCK_DETAIL WHERE LUCK_SEQ = #{seq}
+	</select>
+	
 </mapper>

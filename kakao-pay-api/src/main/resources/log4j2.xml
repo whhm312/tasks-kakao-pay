@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<logger name="org.springframework.web" level="INFO" />
+		<logger name="com.zaxxer.hikari" level="WARN" />
+
+		<!-- log4jdbc-log4j2 -->
+		<logger name="jdbc.sqlonly" level="WARN" />
+		<logger name="jdbc.sqltiming" level="INFO" />
+		<logger name="jdbc.audit" level="WARN" />
+		<logger name="jdbc.resultset" level="INFO" />
+		<logger name="jdbc.resultsettable" level="INFO" />
+		<logger name="jdbc.connection" level="WARN" />
+
+		<Root level="INFO">
+			<AppenderRef ref="STDOUT" />
+		</Root>
+	</Loggers>
+</Configuration>
