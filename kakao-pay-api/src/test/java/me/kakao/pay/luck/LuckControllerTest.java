@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -49,13 +50,13 @@ public class LuckControllerTest {
 
 	@Test
 	@Order(1)
-	public void testGive() throws URISyntaxException {
+	public void testBless() throws URISyntaxException {
 
 		headers = new HttpHeaders();
 		headers.add("X-USER-ID", "test_user");
 		headers.add("X-ROOM-ID", ROOM_ID);
 
-		URI uri = new URI("http://localhost:" + PORT + "/lucks/give");
+		URI uri = new URI("http://localhost:" + PORT + "/lucks/bless");
 
 		BlessRequest request = new BlessRequest();
 		request.setAmount(BLESSING_AMOUNT);
@@ -69,6 +70,7 @@ public class LuckControllerTest {
 		TOKEN = response.getBody().getToken();
 	}
 
+	@Disabled
 	@Test
 	@Order(2)
 	public void testGrap() throws URISyntaxException {
@@ -84,6 +86,7 @@ public class LuckControllerTest {
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 	}
 
+	@Disabled
 	@Test
 	@Order(3)
 	public void testRecords() throws URISyntaxException {
@@ -109,6 +112,24 @@ public class LuckControllerTest {
 		String expected = "김혜민";
 		assertEquals(expected, luckyMembers.get(0).getName());
 		assertTrue(0L < luckyMembers.get(0).getBlessAmount());
+	}
+
+	@Test
+	@Order(4)
+	public void testBedRequestForBless() throws URISyntaxException {
+
+		headers = new HttpHeaders();
+		headers.add("X-USER-ID", "test_user");
+		headers.add("X-ROOM-ID", ROOM_ID);
+
+		URI uri = new URI("http://localhost:" + PORT + "/lucks/bless");
+
+		BlessRequest request = new BlessRequest();
+		request.setAmount(0);
+		request.setMaxReceiverCount(0);
+
+		ResponseEntity<BlessResponse> response = template.exchange(uri, HttpMethod.POST, new HttpEntity<>(request, headers), BlessResponse.class);
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
 
 }

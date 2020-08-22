@@ -14,9 +14,22 @@
   
 	<insert id="insertBlessing" parameterType="me.kakao.pay.common.domain.Blessing">
 		INSERT INTO TBL_BLESSING (
-			BLESSER_ID, ROOM_ID, AMOUNT, MAX_RECEIVER_COUNT, BLESSING_DATE, TOKEN
+			BLESSER_ID, ROOM_ID, 
+			AMOUNT, MAX_RECEIVER_COUNT, 
+			BLESSING_DATE, TOKEN
 		) VALUES (
-			#{blesserId}, #{roomId}, #{amount}, #{maxReceiverCount}, NOW(), #{token}
+			#{blesserId}, #{roomId}, 
+			#{amount}, #{maxReceiverCount}, 
+			NOW(), #{token}
 		)
 	</insert>
+	
+	<select id="countSameToken" parameterType="me.kakao.pay.common.domain.Blessing" resultType="int">
+		SELECT COUNT(*) 
+		  FROM TBL_BLESSING 
+		 WHERE TOKEN = #{token}
+		   AND BLESSER_ID = #{blesserId}
+		   AND ROOM_ID = #{roomId}
+		   AND BLESSING_DATE >= (CURDATE() - INTERVAL 7 DAY)
+	</select>
 </mapper>

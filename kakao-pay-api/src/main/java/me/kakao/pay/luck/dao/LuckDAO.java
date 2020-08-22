@@ -21,4 +21,8 @@ public class LuckDAO {
 		return luckDBMapper.insertBlessing(blessing);
 	}
 
+	public int countSameToken(Blessing blessing) {
+		return luckDBMapper.countSameToken(blessing);
+	}
+
 }

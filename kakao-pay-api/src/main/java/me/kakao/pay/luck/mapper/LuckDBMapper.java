@@ -9,4 +9,6 @@ public interface LuckDBMapper {
 	public String selectNow();
 
 	public int insertBlessing(Blessing blessing);
+
+	public int countSameToken(Blessing blessing);
 }
