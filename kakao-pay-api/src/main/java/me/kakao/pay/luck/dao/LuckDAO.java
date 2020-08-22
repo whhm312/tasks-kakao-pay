@@ -2,7 +2,7 @@ package me.kakao.pay.luck.dao;
 
 import org.springframework.stereotype.Repository;
 
-import me.kakao.pay.common.domain.Blessing;
+import me.kakao.pay.common.domain.Luck;
 import me.kakao.pay.luck.mapper.LuckDBMapper;
 
 @Repository
@@ -17,11 +17,11 @@ public class LuckDAO {
 		return luckDBMapper.selectNow();
 	}
 
-	public int insert(Blessing blessing) {
-		return luckDBMapper.insertBlessing(blessing);
+	public int insert(Luck luck) {
+		return luckDBMapper.insertLuck(luck);
 	}
 
-	public int countSameToken(Blessing blessing) {
+	public int countSameToken(Luck blessing) {
 		return luckDBMapper.countSameToken(blessing);
 	}
 

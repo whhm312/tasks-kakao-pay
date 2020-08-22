@@ -12,21 +12,21 @@
 		SELECT DATE_FORMAT(NOW() , '%Y-%m-%d') AS NOW
 	</select>
   
-	<insert id="insertBlessing" parameterType="me.kakao.pay.common.domain.Blessing">
-		INSERT INTO TBL_BLESSING (
+	<insert id="insertLuck" parameterType="me.kakao.pay.common.domain.Luck">
+		INSERT INTO TBL_LUCK (
 			BLESSER_ID, ROOM_ID, 
-			AMOUNT, MAX_RECEIVER_COUNT, 
+			AMOUNT, MAX_GRABBER_COUNT, 
 			BLESSING_DATE, TOKEN
 		) VALUES (
 			#{blesserId}, #{roomId}, 
-			#{amount}, #{maxReceiverCount}, 
+			#{amount}, #{maxGrabberCount}, 
 			NOW(), #{token}
 		)
 	</insert>
 	
-	<select id="countSameToken" parameterType="me.kakao.pay.common.domain.Blessing" resultType="int">
+	<select id="countSameToken" parameterType="me.kakao.pay.common.domain.Luck" resultType="int">
 		SELECT COUNT(*) 
-		  FROM TBL_BLESSING 
+		  FROM TBL_LUCK 
 		 WHERE TOKEN = #{token}
 		   AND BLESSER_ID = #{blesserId}
 		   AND ROOM_ID = #{roomId}

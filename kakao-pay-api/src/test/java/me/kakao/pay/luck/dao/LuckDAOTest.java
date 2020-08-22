@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import me.kakao.pay.common.domain.Blessing;
+import me.kakao.pay.common.domain.Luck;
 import me.kakao.pay.luck.service.TokenGenerator;
 
 @SpringBootTest
@@ -27,13 +27,13 @@ public class LuckDAOTest {
 	public void testInsertBless() {
 		String roomId = "X123";
 		String blesserId = "whily312";
-		int maxReceiverCount = 3;
+		int maxGrabberCount = 3;
 		long amount = 30000;
 		String token = TokenGenerator.get();
 
-		Blessing blessing = new Blessing();
+		Luck blessing = new Luck();
 		blessing.setAmount(amount);
-		blessing.setMaxReceiverCount(maxReceiverCount);
+		blessing.setMaxGrabberCount(maxGrabberCount);
 		blessing.setBlesserId(blesserId);
 		blessing.setRoomId(roomId);
 		blessing.setToken(token);

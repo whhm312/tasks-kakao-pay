@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class BlessResponse {
+public class BlessLuckResponse {
 	private String token;
 }

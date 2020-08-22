@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class Blessing {
+public class Luck {
 	private long amount;
-	private int maxReceiverCount;
+	private int maxGrabberCount;
 	private String token;
 	private String roomId;
 	private String blesserId;

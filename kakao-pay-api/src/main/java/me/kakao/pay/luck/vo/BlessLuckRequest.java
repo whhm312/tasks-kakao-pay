@@ -7,9 +7,9 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class BlessRequest {
+public class BlessLuckRequest {
 	@Min(1)
 	private long amount;
 	@Min(1)
-	private int maxReceiverCount;
+	private int maxGrabberCount;
 }

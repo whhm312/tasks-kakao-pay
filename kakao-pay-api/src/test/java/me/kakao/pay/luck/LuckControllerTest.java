@@ -24,8 +24,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 
-import me.kakao.pay.luck.vo.BlessRequest;
-import me.kakao.pay.luck.vo.BlessResponse;
+import me.kakao.pay.luck.vo.BlessLuckRequest;
+import me.kakao.pay.luck.vo.BlessLuckResponse;
 import me.kakao.pay.luck.vo.GrapResponse;
 import me.kakao.pay.luck.vo.LuckyMemberResponse;
 import me.kakao.pay.luck.vo.RecordResponse;
@@ -44,7 +44,7 @@ public class LuckControllerTest {
 	private String TOKEN;
 	private String ROOM_ID = "test_room";
 	private long BLESSING_AMOUNT = 10000;
-	private int MAX_RECEIVER_COUNT = 3;
+	private int MAX_GRABBER_COUNT = 3;
 
 	@Test
 	@Order(1)
@@ -56,11 +56,11 @@ public class LuckControllerTest {
 
 		URI uri = new URI("http://localhost:" + PORT + "/lucks/bless");
 
-		BlessRequest request = new BlessRequest();
+		BlessLuckRequest request = new BlessLuckRequest();
 		request.setAmount(BLESSING_AMOUNT);
-		request.setMaxReceiverCount(MAX_RECEIVER_COUNT);
+		request.setMaxGrabberCount(MAX_GRABBER_COUNT);
 
-		ResponseEntity<BlessResponse> response = template.exchange(uri, HttpMethod.POST, new HttpEntity<>(request, headers), BlessResponse.class);
+		ResponseEntity<BlessLuckResponse> response = template.exchange(uri, HttpMethod.POST, new HttpEntity<>(request, headers), BlessLuckResponse.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 		assertTrue(response.getBody().getToken().length() == 3);
@@ -122,11 +122,11 @@ public class LuckControllerTest {
 
 		URI uri = new URI("http://localhost:" + PORT + "/lucks/bless");
 
-		BlessRequest request = new BlessRequest();
+		BlessLuckRequest request = new BlessLuckRequest();
 		request.setAmount(0);
-		request.setMaxReceiverCount(0);
+		request.setMaxGrabberCount(0);
 
-		ResponseEntity<BlessResponse> response = template.exchange(uri, HttpMethod.POST, new HttpEntity<>(request, headers), BlessResponse.class);
+		ResponseEntity<BlessLuckResponse> response = template.exchange(uri, HttpMethod.POST, new HttpEntity<>(request, headers), BlessLuckResponse.class);
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
 

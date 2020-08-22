@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import me.kakao.pay.common.domain.Blessing;
+import me.kakao.pay.common.domain.Luck;
 
 @SpringBootTest
 public class LuckServiceTest {
@@ -17,11 +17,11 @@ public class LuckServiceTest {
 
 	@Test
 	public void testUniqueToken() {
-		Blessing blessing = new Blessing();
+		Luck blessing = new Luck();
 		blessing.setToken(TokenGenerator.get());
 		blessing.setAmount(100000);
 		blessing.setBlesserId("test1");
-		blessing.setMaxReceiverCount(2);
+		blessing.setMaxGrabberCount(2);
 		blessing.setRoomId("xx1123");
 
 		assertTrue(luckService.isUniqueToken(blessing));
