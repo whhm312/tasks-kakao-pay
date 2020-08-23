@@ -6,7 +6,6 @@ import org.mapstruct.Mappings;
 
 import me.kakao.pay.common.domain.Luck;
 import me.kakao.pay.luck.vo.BlessLuckRequest;
-import me.kakao.pay.luck.vo.GrabLuckRequest;
 
 @Mapper(componentModel = "spring")
 public interface LuckObjectMapper {
@@ -19,6 +18,6 @@ public interface LuckObjectMapper {
 	@Mappings({ 
 		@Mapping(target = "roomId", source = "roomId", defaultValue = "") 
 	})
-	Luck requestToGrab(GrabLuckRequest request, String roomId);
+	Luck requestToGrab(String token, String roomId);
 
 }

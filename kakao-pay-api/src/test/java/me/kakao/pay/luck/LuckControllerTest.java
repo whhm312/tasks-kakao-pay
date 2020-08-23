@@ -26,7 +26,6 @@ import org.springframework.util.StringUtils;
 
 import me.kakao.pay.luck.vo.BlessLuckRequest;
 import me.kakao.pay.luck.vo.BlessLuckResponse;
-import me.kakao.pay.luck.vo.GrabLuckRequest;
 import me.kakao.pay.luck.vo.GrabLuckResponse;
 import me.kakao.pay.luck.vo.LuckyMemberResponse;
 import me.kakao.pay.luck.vo.RecordResponse;
@@ -78,11 +77,8 @@ public class LuckControllerTest {
 		headers.add("X-USER-ID", "test_grap_user");
 		headers.add("X-ROOM-ID", ROOM_ID);
 
-		URI uri = new URI("http://localhost:" + PORT + "/lucks/grab");
-		GrabLuckRequest request = new GrabLuckRequest();
-		request.setToken(TOKEN);
-
-		ResponseEntity<GrabLuckResponse> response = template.exchange(uri, HttpMethod.POST, new HttpEntity<>(request, headers), GrabLuckResponse.class);
+		URI uri = new URI("http://localhost:" + PORT + "/lucks/" + TOKEN + "/grab");
+		ResponseEntity<GrabLuckResponse> response = template.exchange(uri, HttpMethod.POST, new HttpEntity<>(headers), GrabLuckResponse.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
 	}
@@ -97,7 +93,7 @@ public class LuckControllerTest {
 		headers.add("X-USER-ID", "test_user");
 		headers.add("X-ROOM-ID", ROOM_ID);
 
-		URI uri = new URI("http://localhost:" + PORT + "/lucks/" + TOKEN + "/records");
+		URI uri = new URI("http://localhost:" + PORT + "/lucks/" + TOKEN);
 		ResponseEntity<RecordsResponse> response = template.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), RecordsResponse.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());

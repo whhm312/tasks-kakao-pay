@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -17,7 +18,6 @@ import me.kakao.pay.luck.mapper.LuckObjectMapper;
 import me.kakao.pay.luck.service.LuckService;
 import me.kakao.pay.luck.vo.BlessLuckRequest;
 import me.kakao.pay.luck.vo.BlessLuckResponse;
-import me.kakao.pay.luck.vo.GrabLuckRequest;
 import me.kakao.pay.luck.vo.GrabLuckResponse;
 
 @RestController
@@ -47,16 +47,16 @@ public class LuckController {
 		return new ResponseEntity<BlessLuckResponse>(response, HttpStatus.CREATED);
 	}
 
-	@PostMapping("/grab")
-	public ResponseEntity<GrabLuckResponse> grab(@RequestHeader HttpHeaders headers, @Valid @RequestBody GrabLuckRequest request) {
-		Luck luck = luckMapper.requestToGrab(request, getRoomId(headers));
+	@PostMapping("/grab/{token}")
+	public ResponseEntity<GrabLuckResponse> grab(@RequestHeader HttpHeaders headers, @PathVariable(name = "token", required = true) String token) {
+		Luck luck = luckMapper.requestToGrab(token, getRoomId(headers));
 		long grabbedAmount = luckService.grab(luck, getUserId(headers));
 
 		GrabLuckResponse response = new GrabLuckResponse();
 		response.setGrabbedAmount(grabbedAmount);
 		return new ResponseEntity<GrabLuckResponse>(response, HttpStatus.CREATED);
 	}
-
+	
 	private String getUserId(HttpHeaders headers) {
 		if (headers.get(HEAD_USER_ID) == null) {
 			return "";
