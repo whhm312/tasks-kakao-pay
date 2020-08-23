@@ -18,6 +18,7 @@ import me.kakao.pay.common.exception.ExpiredLuckException;
 import me.kakao.pay.common.exception.FailedCreateTokenException;
 import me.kakao.pay.common.exception.FailedInsertLuckDetailException;
 import me.kakao.pay.common.exception.FailedInsertLuckException;
+import me.kakao.pay.common.exception.ForbiddenSearchException;
 import me.kakao.pay.common.exception.FullGrabException;
 import me.kakao.pay.common.exception.InvalidLuckException;
 import me.kakao.pay.common.exception.NotValidMemberException;
@@ -156,6 +157,10 @@ public class LuckService {
 		LuckRecord luckRecords = luckDAO.selectLuckRecord(luck);
 		if (luckRecords == null) {
 			throw new InvalidLuckException("Cannot find the luck.");
+		}
+		
+		if (!luckRecords.getBlesserId().equals(luck.getBlesserId())) {
+			throw new ForbiddenSearchException("A luck can search only its owner.");
 		}
 
 		if (luckRecords.isExpried()) {

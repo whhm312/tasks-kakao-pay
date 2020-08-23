@@ -114,4 +114,12 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
+	@ExceptionHandler(ForbiddenSearchException.class)
+	protected ResponseEntity<ErrorResponse> handlerForbiddenSearchException(ForbiddenSearchException e) {
+		ErrorResponse response = new ErrorResponse();
+		response.setCode("B0008");
+		response.setMessage(e.getLocalizedMessage());
+		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+	}
+
 }
