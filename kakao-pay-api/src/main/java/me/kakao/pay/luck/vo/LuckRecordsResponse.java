@@ -7,10 +7,10 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class RecordResponse {
+public class LuckRecordsResponse {
 	private String blessTime;
 	private long blessAmount;
-	private long grappedAmount;
-	private int grappedCount;
+	private long totalGrabbedAmount;
+	private int totalLuckyMemberCount;
 	private List<LuckyMemberResponse> luckyMembers;
 }

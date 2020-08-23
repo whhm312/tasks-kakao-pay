@@ -8,7 +8,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -27,9 +26,8 @@ import org.springframework.util.StringUtils;
 import me.kakao.pay.luck.vo.BlessLuckRequest;
 import me.kakao.pay.luck.vo.BlessLuckResponse;
 import me.kakao.pay.luck.vo.GrabLuckResponse;
+import me.kakao.pay.luck.vo.LuckRecordsResponse;
 import me.kakao.pay.luck.vo.LuckyMemberResponse;
-import me.kakao.pay.luck.vo.RecordResponse;
-import me.kakao.pay.luck.vo.RecordsResponse;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -42,6 +40,7 @@ public class LuckControllerTest {
 
 	private HttpHeaders headers;
 	private static String TOKEN;
+	private static long GRABBED_AMOUNT;
 	private String ROOM_ID = "test_room";
 	private long BLESSING_AMOUNT = 10000;
 	private int MAX_GRABBER_COUNT = 3;
@@ -81,9 +80,9 @@ public class LuckControllerTest {
 		ResponseEntity<GrabLuckResponse> response = template.exchange(uri, HttpMethod.POST, new HttpEntity<>(headers), GrabLuckResponse.class);
 
 		assertEquals(HttpStatus.CREATED, response.getStatusCode());
+		GRABBED_AMOUNT = response.getBody().getGrabbedAmount();
 	}
 
-	@Disabled
 	@Test
 	@Order(3)
 	public void testRecords() throws URISyntaxException {
@@ -94,21 +93,20 @@ public class LuckControllerTest {
 		headers.add("X-ROOM-ID", ROOM_ID);
 
 		URI uri = new URI("http://localhost:" + PORT + "/lucks/" + TOKEN);
-		ResponseEntity<RecordsResponse> response = template.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), RecordsResponse.class);
+		ResponseEntity<LuckRecordsResponse> response = template.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), LuckRecordsResponse.class);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		assertEquals(1, response.getBody().getTotalCount());
+		assertEquals(1, response.getBody().getTotalLuckyMemberCount());
 
-		List<RecordResponse> records = response.getBody().getRecords();
-		assertEquals(BLESSING_AMOUNT, records.get(0).getBlessAmount());
-		assertEquals(1, records.get(0).getGrappedCount());
-		assertFalse(StringUtils.isEmpty(records.get(0).getBlessTime()));
-		assertTrue(0L < records.get(0).getGrappedAmount());
+		assertEquals(BLESSING_AMOUNT, response.getBody().getBlessAmount());
+		assertEquals(1, response.getBody().getTotalLuckyMemberCount());
+		assertFalse(StringUtils.isEmpty(response.getBody().getBlessTime()));
+		assertTrue(0 < response.getBody().getTotalGrabbedAmount());
 
-		List<LuckyMemberResponse> luckyMembers = records.get(0).getLuckyMembers();
-		String expected = "김혜민";
-		assertEquals(expected, luckyMembers.get(0).getName());
-		assertTrue(0L < luckyMembers.get(0).getBlessAmount());
+		List<LuckyMemberResponse> luckyMembers = response.getBody().getLuckyMembers();
+		assertEquals("test_grap_user", luckyMembers.get(0).getUserId());
+		assertTrue(0 < luckyMembers.get(0).getAmount());
+		assertEquals(GRABBED_AMOUNT, luckyMembers.get(0).getAmount());
 	}
 
 	@Test

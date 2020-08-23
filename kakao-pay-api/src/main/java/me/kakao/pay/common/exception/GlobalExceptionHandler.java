@@ -90,18 +90,10 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(FailedCreateTokenException.class)
-	protected ResponseEntity<ErrorResponse> handlerFailedCreateTokenException(FailedCreateTokenException e) {
-		ErrorResponse response = new ErrorResponse();
-		response.setCode("B0005");
-		response.setMessage(e.getLocalizedMessage());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-	}
-
 	@ExceptionHandler(FullGrabException.class)
 	protected ResponseEntity<ErrorResponse> handlerFullGrabException(FullGrabException e) {
 		ErrorResponse response = new ErrorResponse();
-		response.setCode("B0006");
+		response.setCode("B0005");
 		response.setMessage(e.getLocalizedMessage());
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
@@ -109,7 +101,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(InvalidLuckException.class)
 	protected ResponseEntity<ErrorResponse> handlerInvalidLuckException(InvalidLuckException e) {
 		ErrorResponse response = new ErrorResponse();
-		response.setCode("B0007");
+		response.setCode("B0006");
 		response.setMessage(e.getLocalizedMessage());
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
@@ -117,7 +109,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(NotValidMemberException.class)
 	protected ResponseEntity<ErrorResponse> handlerNotValidMemberException(NotValidMemberException e) {
 		ErrorResponse response = new ErrorResponse();
-		response.setCode("B0008");
+		response.setCode("B0007");
 		response.setMessage(e.getLocalizedMessage());
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}

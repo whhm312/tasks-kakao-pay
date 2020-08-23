@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import me.kakao.pay.common.domain.Luck;
 import me.kakao.pay.common.domain.LuckDetail;
 import me.kakao.pay.common.domain.LuckGrabRecord;
+import me.kakao.pay.common.domain.LuckRecord;
+import me.kakao.pay.common.domain.LuckyMember;
 import me.kakao.pay.luck.mapper.LuckDBMapper;
 
 @Repository
@@ -55,6 +57,14 @@ public class LuckDAO {
 
 	public int countVaildTimeLuck(int luckSeq, int minutes) {
 		return luckDBMapper.countVaildTimeLuck(luckSeq, minutes);
+	}
+
+	public List<LuckyMember> getLuckyMembers(int luckSeq) {
+		return luckDBMapper.selectLuckGrabRecordBySeq(luckSeq);
+	}
+
+	public LuckRecord selectLuckRecord(Luck luck) {
+		return luckDBMapper.selectLuckRecord(luck);
 	}
 
 }

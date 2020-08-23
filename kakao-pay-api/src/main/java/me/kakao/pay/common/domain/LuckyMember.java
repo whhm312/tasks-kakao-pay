@@ -1,11 +1,11 @@
-package me.kakao.pay.luck.vo;
+package me.kakao.pay.common.domain;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class LuckyMemberResponse {
+public class LuckyMember {
 	private String userId;
 	private long amount;
 }

@@ -88,4 +88,24 @@
 		WHERE SEQ = #{luckSeq}
 		 AND BLESSING_DATE >= (CURRENT_TIME() - INTERVAL ${minutes} MINUTE) 
 	</select>
+	
+	<select id="selectLuckRecord" parameterType="me.kakao.pay.common.domain.Luck" resultType="me.kakao.pay.common.domain.LuckRecord">
+ 		SELECT 
+ 		  IFNULL((SELECT SUM(D.AMOUNT) FROM TBL_LUCK_DETAIL D WHERE D.LUCK_SEQ = L.SEQ GROUP BY LUCK_SEQ), 0) AS TOTAL_GRABBED_AMOUNT,
+ 		  IFNULL((SELECT COUNT(*) FROM TBL_LUCK_GRAB_RECORD R WHERE R.LUCK_SEQ = L.SEQ), 0) AS TOTAL_LUCKY_MEMBER_COUNT,
+ 		  IF(BLESSING_DATE >= (CURDATE() - INTERVAL 7 DAY), 'TRUE', 'FALSE') AS IS_EXPIRED, 
+		  SEQ, BLESSER_ID, ROOM_ID , AMOUNT, 
+		  MAX_GRABBER_COUNT, BLESSING_DATE, TOKEN
+		  FROM TBL_LUCK L 
+		 WHERE TOKEN = #{token} 
+		   AND ROOM_ID = #{roomId} 
+		   AND BLESSER_ID = #{blesserId}
+	</select>
+	
+	<select id="selectLuckGrabRecordBySeq" parameterType="int" resultType="me.kakao.pay.common.domain.LuckyMember">
+		 SELECT D.AMOUNT, G.GRAB_USER_ID AS USER_ID
+		   FROM TBL_LUCK_DETAIL D, TBL_LUCK_GRAB_RECORD G 
+		  WHERE G.LUCK_DETAIL_SEQ = D.SEQ
+		    AND G.LUCK_SEQ = #{luckSeq}
+	</select>
 </mapper>

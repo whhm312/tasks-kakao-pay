@@ -24,7 +24,7 @@ public class LuckObjectMapperTest {
 		String userId = "xxxx";
 		String roomId = "102";
 
-		Luck blessing = luckMapping.requestToBlessing(request, userId, roomId);
+		Luck blessing = luckMapping.blessRequestToLuck(request, userId, roomId);
 		assertEquals(userId, blessing.getBlesserId());
 		assertEquals(roomId, blessing.getRoomId());
 		assertEquals(request.getAmount(), blessing.getAmount());

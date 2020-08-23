@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Param;
 import me.kakao.pay.common.domain.Luck;
 import me.kakao.pay.common.domain.LuckDetail;
 import me.kakao.pay.common.domain.LuckGrabRecord;
+import me.kakao.pay.common.domain.LuckRecord;
+import me.kakao.pay.common.domain.LuckyMember;
 
 @Mapper
 public interface LuckDBMapper {
@@ -32,5 +34,9 @@ public interface LuckDBMapper {
 	public int countGrabRecord(int luckSeq);
 
 	public int countVaildTimeLuck(@Param("luckSeq") int luckSeq, @Param("minutes") int minutes);
+
+	public LuckRecord selectLuckRecord(Luck luck);
+
+	public List<LuckyMember> selectLuckGrabRecordBySeq(int luckSeq);
 
 }

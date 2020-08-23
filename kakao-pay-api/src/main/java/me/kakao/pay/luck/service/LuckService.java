@@ -1,5 +1,6 @@
 package me.kakao.pay.luck.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import me.kakao.pay.common.domain.Luck;
 import me.kakao.pay.common.domain.LuckDetail;
 import me.kakao.pay.common.domain.LuckGrabRecord;
+import me.kakao.pay.common.domain.LuckRecord;
+import me.kakao.pay.common.domain.LuckyMember;
 import me.kakao.pay.common.exception.AlreadyGrabUserException;
 import me.kakao.pay.common.exception.BlesserNotAllowGrabException;
 import me.kakao.pay.common.exception.ExpiredLuckException;
@@ -79,6 +82,7 @@ public class LuckService {
 
 	public long grab(Luck luck, String requestUserId) {
 		luck = luckDAO.selectLuck(luck);
+		
 		if (luck == null) {
 			throw new InvalidLuckException("Cannot find the luck.");
 		}
@@ -148,4 +152,23 @@ public class LuckService {
 		return luckDAO.countVaildTimeLuck(luck.getSeq(), EXPIRED_MINUTE) < 1;
 	}
 
+	public LuckRecord getLuckRecords(Luck luck) {
+		LuckRecord luckRecords = luckDAO.selectLuckRecord(luck);
+		if (luckRecords == null) {
+			throw new InvalidLuckException("Cannot find the luck.");
+		}
+
+		if (luckRecords.isExpried()) {
+			throw new ExpiredLuckException("The luck is already expired date.");
+		}
+
+		List<LuckyMember> luckyMembers = luckDAO.getLuckyMembers(luckRecords.getSeq());
+		if (luckyMembers == null) {
+			luckRecords.setLuckyMembers(new ArrayList<LuckyMember>());
+		} else {
+			luckRecords.setLuckyMembers(luckyMembers);
+		}
+		
+		return luckRecords;
+	}
 }
