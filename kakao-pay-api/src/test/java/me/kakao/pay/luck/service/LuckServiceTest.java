@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -87,4 +88,45 @@ public class LuckServiceTest {
 
 		assertEquals(luck.getAmount(), totalAmount);
 	}
+
+	@Disabled
+	@Test
+	public void testIsNotValidMember() {
+		String requestUserId = "";
+		Luck luck = new Luck();
+		luckService.isNotValidMember(luck, requestUserId);
+	}
+
+	@Test
+	public void testIsExistGrab() {
+		String requestUserId = "11123";
+		Luck luck = new Luck();
+		luck.setSeq(27);
+		assertTrue(luckService.isDuplicatedGrab(luck, requestUserId));
+	}
+
+	@Test
+	public void testIsBlesser() {
+		String requestUserId = "test_user";
+		Luck luck = new Luck();
+		luck.setToken("YVS");
+		luck.setRoomId("test_room");
+		assertTrue(luckService.isBlesser(luck, requestUserId));
+	}
+
+	@Test
+	public void testIsOverTime() {
+		Luck luck = new Luck();
+		luck.setSeq(27);
+		assertTrue(luckService.isOverTime(luck));
+	}
+
+	@Test
+	public void testIsFullGrab() {
+		Luck luck = new Luck();
+		luck.setSeq(27);
+		luck.setMaxGrabberCount(3);
+		assertTrue(luckService.isFullGrab(luck));
+	}
+
 }

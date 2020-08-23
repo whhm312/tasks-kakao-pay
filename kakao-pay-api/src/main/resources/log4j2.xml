@@ -13,8 +13,8 @@
 		<logger name="jdbc.sqlonly" level="WARN" />
 		<logger name="jdbc.sqltiming" level="INFO" />
 		<logger name="jdbc.audit" level="WARN" />
-		<logger name="jdbc.resultset" level="INFO" />
-		<logger name="jdbc.resultsettable" level="INFO" />
+		<logger name="jdbc.resultset" level="ERROR" />
+		<logger name="jdbc.resultsettable" level="ERROR" />
 		<logger name="jdbc.connection" level="WARN" />
 
 		<Root level="INFO">

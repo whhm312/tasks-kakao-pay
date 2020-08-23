@@ -17,6 +17,8 @@ import me.kakao.pay.luck.mapper.LuckObjectMapper;
 import me.kakao.pay.luck.service.LuckService;
 import me.kakao.pay.luck.vo.BlessLuckRequest;
 import me.kakao.pay.luck.vo.BlessLuckResponse;
+import me.kakao.pay.luck.vo.GrabLuckRequest;
+import me.kakao.pay.luck.vo.GrabLuckResponse;
 
 @RestController
 @RequestMapping("/lucks")
@@ -43,6 +45,16 @@ public class LuckController {
 		BlessLuckResponse response = new BlessLuckResponse();
 		response.setToken(token);
 		return new ResponseEntity<BlessLuckResponse>(response, HttpStatus.CREATED);
+	}
+
+	@PostMapping("/grab")
+	public ResponseEntity<GrabLuckResponse> grab(@RequestHeader HttpHeaders headers, @Valid @RequestBody GrabLuckRequest request) {
+		Luck luck = luckMapper.requestToGrab(request, getRoomId(headers));
+		long grabbedAmount = luckService.grab(luck, getUserId(headers));
+
+		GrabLuckResponse response = new GrabLuckResponse();
+		response.setGrabbedAmount(grabbedAmount);
+		return new ResponseEntity<GrabLuckResponse>(response, HttpStatus.CREATED);
 	}
 
 	private String getUserId(HttpHeaders headers) {

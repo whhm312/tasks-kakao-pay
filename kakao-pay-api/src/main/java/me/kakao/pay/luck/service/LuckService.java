@@ -8,15 +8,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 import me.kakao.pay.common.domain.Luck;
 import me.kakao.pay.common.domain.LuckDetail;
+import me.kakao.pay.common.domain.LuckGrabRecord;
+import me.kakao.pay.common.exception.AlreadyGrabUserException;
+import me.kakao.pay.common.exception.BlesserNotAllowGrabException;
+import me.kakao.pay.common.exception.ExpiredLuckException;
 import me.kakao.pay.common.exception.FailedCreateTokenException;
 import me.kakao.pay.common.exception.FailedInsertLuckDetailException;
 import me.kakao.pay.common.exception.FailedInsertLuckException;
+import me.kakao.pay.common.exception.FullGrabException;
+import me.kakao.pay.common.exception.InvalidLuckException;
+import me.kakao.pay.common.exception.NotValidMemberException;
 import me.kakao.pay.luck.dao.LuckDAO;
 
 @Service
 public class LuckService {
 	@Value("${token.generate.retry.count}")
 	private int RETRY_COUNT;
+	@Value("${token.expired.minute}")
+	private int EXPIRED_MINUTE;
 
 	private LuckDAO luckDAO;
 
@@ -66,6 +75,77 @@ public class LuckService {
 	public boolean isUniqueToken(Luck blessing) {
 		int count = luckDAO.countSameToken(blessing);
 		return count < 1;
+	}
+
+	public long grab(Luck luck, String requestUserId) {
+		luck = luckDAO.selectLuck(luck);
+		if (luck == null) {
+			throw new InvalidLuckException("Cannot find the luck.");
+		}
+
+		if (isNotValidMember(luck, requestUserId)) {
+			throw new NotValidMemberException(requestUserId + " is not the member of the chat.");
+		}
+
+		if (isDuplicatedGrab(luck, requestUserId)) {
+			throw new AlreadyGrabUserException(requestUserId + " is already grab the luck.");
+		}
+
+		if (isBlesser(luck, requestUserId)) {
+			throw new BlesserNotAllowGrabException("Blesser is not allow to grab blesser's luck.");
+		}
+
+		if (isOverTime(luck)) {
+			throw new ExpiredLuckException("The luck is expired time. {" + EXPIRED_MINUTE + "min.}");
+		}
+
+		if (isFullGrab(luck)) {
+			throw new FullGrabException("The luck is over to grab.");
+		}
+
+		List<LuckDetail> luckDetails = luckDAO.selectVaildGrabLuckDetail(luck);
+
+		LuckGrabRecord record = new LuckGrabRecord();
+		record.setGrabUserId(requestUserId);
+		record.setLuckDetailSeq(luckDetails.get(0).getSeq());
+		record.setLuckSeq(luckDetails.get(0).getLuckSeq());
+
+		luckDAO.insert(record);
+
+		return luckDetails.get(0).getAmount();
+	}
+
+	// TODO 해당 대화방 인원인지 어떻게 체크할 것인가
+	public boolean isNotValidMember(Luck luck, String requestUserId) {
+		return false;
+	}
+
+	public boolean isDuplicatedGrab(Luck luck, String requestUserId) {
+		LuckGrabRecord record = new LuckGrabRecord();
+		record.setLuckSeq(luck.getSeq());
+		record.setGrabUserId(requestUserId);
+		record = luckDAO.selectLuckGrabRecord(record);
+		if (record == null) {
+			return false;
+		}
+		return record.getLuckDetailSeq() > 0;
+	}
+
+	public boolean isFullGrab(Luck luck) {
+		return luckDAO.countGrabRecord(luck.getSeq()) >= luck.getMaxGrabberCount();
+	}
+
+	public boolean isBlesser(Luck luck, String requestUserId) {
+		luck.setBlesserId(requestUserId);
+		Luck selectLuck = luckDAO.selectLuck(luck);
+		if (selectLuck == null) {
+			return false;
+		}
+		return selectLuck.getSeq() > 0;
+	}
+
+	public boolean isOverTime(Luck luck) {
+		return luckDAO.countVaildTimeLuck(luck.getSeq(), EXPIRED_MINUTE) < 1;
 	}
 
 }

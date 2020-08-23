@@ -42,11 +42,50 @@
 		 WHERE TOKEN = #{token} 
 		   AND BLESSING_DATE >= (CURDATE() - INTERVAL 7 DAY)
 		   AND ROOM_ID = #{roomId} 
+		   <if test="blesserId != null and !''.equals(blesserId)">
 		   AND BLESSER_ID = #{blesserId}
+		   </if>
 	</select>
 
 	<select id="selectLuckDetail" parameterType="me.kakao.pay.common.domain.Luck" resultType="me.kakao.pay.common.domain.LuckDetail">
 		SELECT * FROM TBL_LUCK_DETAIL WHERE LUCK_SEQ = #{seq}
 	</select>
 	
+	
+	<select id="selectVaildGrabLuckDetail" parameterType="me.kakao.pay.common.domain.Luck" resultType="me.kakao.pay.common.domain.LuckDetail">
+		SELECT D.*
+		  FROM TBL_LUCK_DETAIL D LEFT JOIN TBL_LUCK_GRAB_RECORD G ON D.SEQ = G.LUCK_DETAIL_SEQ
+		 WHERE G.LUCK_DETAIL_SEQ IS NULL
+		   AND D.LUCK_SEQ = #{seq}
+	</select>
+	
+	<insert id="insertLuckGrabRecord" parameterType="me.kakao.pay.common.domain.LuckGrabRecord" useGeneratedKeys="true" keyProperty="seq">
+		INSERT INTO TBL_LUCK_GRAB_RECORD (
+			LUCK_SEQ, LUCK_DETAIL_SEQ, GRAB_USER_ID, GRAB_DATE
+		) values (
+			#{luckSeq}, #{luckDetailSeq}, #{grabUserId}, NOW()
+		)
+	</insert>
+	
+	<select id="selectLuckGrabRecord" parameterType="me.kakao.pay.common.domain.LuckGrabRecord" resultType="me.kakao.pay.common.domain.LuckGrabRecord">
+		SELECT G.*
+		  FROM TBL_LUCK_GRAB_RECORD G, TBL_LUCK_DETAIL D
+		 WHERE G.LUCK_DETAIL_SEQ = D.SEQ
+		   AND D.LUCK_SEQ = #{luckSeq}
+		   AND G.GRAB_USER_ID = #{grabUserId}
+	</select>
+	
+	<select id="countGrabRecord" parameterType="int" resultType="int">
+		SELECT COUNT(*)
+		  FROM TBL_LUCK_GRAB_RECORD G, TBL_LUCK L 
+		 WHERE L.SEQ = G.LUCK_SEQ
+		   AND L.SEQ = #{luckSeq}
+	</select>
+	
+	<select id="countVaildTimeLuck" parameterType="string" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_LUCK
+		WHERE SEQ = #{luckSeq}
+		 AND BLESSING_DATE >= (CURRENT_TIME() - INTERVAL ${minutes} MINUTE) 
+	</select>
 </mapper>
