@@ -36,6 +36,8 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("E0001");
 		response.setMessage(e.getMessage());
+
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
@@ -44,6 +46,8 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("E0002");
 		response.setMessage(e.getLocalizedMessage());
+
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
@@ -52,14 +56,18 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("E0003");
 		response.setMessage(e.getLocalizedMessage());
+
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-	
+
 	@ExceptionHandler(CannotGetJdbcConnectionException.class)
 	protected ResponseEntity<ErrorResponse> handlerCannotGetJdbcConnectionException(CannotGetJdbcConnectionException e) {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("E0004");
 		response.setMessage("DB Connection Error.");
+
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
@@ -85,6 +93,7 @@ public class GlobalExceptionHandler {
 		}
 		response.setDetails(errors);
 
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
@@ -93,6 +102,8 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0002");
 		response.setMessage(e.getLocalizedMessage());
+
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
@@ -101,6 +112,8 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0003");
 		response.setMessage(e.getLocalizedMessage());
+
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
@@ -109,6 +122,8 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0004");
 		response.setMessage(e.getLocalizedMessage());
+
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
@@ -117,6 +132,8 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0005");
 		response.setMessage(e.getLocalizedMessage());
+
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
@@ -125,6 +142,8 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0006");
 		response.setMessage(e.getLocalizedMessage());
+
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}
 
@@ -133,6 +152,8 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0007");
 		response.setMessage(e.getLocalizedMessage());
+
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 	}
 
@@ -141,6 +162,8 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0008");
 		response.setMessage(e.getLocalizedMessage());
+
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 	}
 
@@ -149,6 +172,8 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0009");
 		response.setMessage(e.getLocalizedMessage());
+
+		logger.error(response);
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 }
