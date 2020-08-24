@@ -122,7 +122,7 @@ public class LuckService {
 		condition.setToken(token);
 		condition.setRoomId(roomId);
 		if (isOverDate(condition)) {
-			throw new ExpiredLuckException("The luck is already expired date. {" + EXPIRED_DAYS + "days.}");
+			throw new ExpiredLuckException("The luck is already expired date. {" + EXPIRED_DAYS + "days}");
 		}
 
 		if (isOverTime(condition)) {
@@ -132,7 +132,7 @@ public class LuckService {
 		Luck luck = luckDAO.selectLuck(condition);
 
 		if (luck == null) {
-			throw new InvalidTokenException("Cannot find the luck by the token .{ " + token + "}");
+			throw new InvalidTokenException("Cannot find the luck by the token. {" + token + "}");
 		}
 
 		if (isNotValidMember(luck.getRoomId(), roomId)) {

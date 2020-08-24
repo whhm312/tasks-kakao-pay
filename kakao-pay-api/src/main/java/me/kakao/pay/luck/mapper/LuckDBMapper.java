@@ -32,7 +32,7 @@ public interface LuckDBMapper {
 
 	public int countGrabRecord(int luckSeq);
 
-	public boolean isVaildDateTimeLuck(Luck luck);
+	public Boolean isVaildDateTimeLuck(Luck luck);
 
 	public LuckRecord selectLuckRecord(Luck luck);
 

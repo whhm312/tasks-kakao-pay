@@ -56,7 +56,12 @@ public class LuckDAO {
 	}
 
 	public boolean isVaildDateTimeLuck(Luck luck) {
-		return luckDBMapper.isVaildDateTimeLuck(luck);
+		Boolean vaildDateTimeLuck = luckDBMapper.isVaildDateTimeLuck(luck);
+		if (vaildDateTimeLuck == null) {
+			return false;
+		}
+		
+		return vaildDateTimeLuck;
 	}
 
 	public List<LuckyMember> getLuckyMembers(int luckSeq) {
