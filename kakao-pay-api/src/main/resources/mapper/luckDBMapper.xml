@@ -29,9 +29,9 @@
 		SELECT COUNT(*) 
 		  FROM TBL_LUCK 
 		 WHERE TOKEN = #{token}
-		   AND BLESSING_DATE >= (CURDATE() - INTERVAL 7 DAY)
 		   AND ROOM_ID = #{roomId}
 		   AND BLESSER_ID = #{blesserId}
+		   AND BLESSING_DATE >= (NOW() - INTERVAL ${expiredDays} DAY)
 	</select>
 	
 	<select id="selectLuck" parameterType="me.kakao.pay.common.domain.Luck" resultType="me.kakao.pay.common.domain.Luck">
@@ -40,7 +40,6 @@
 		  MAX_GRABBER_COUNT, BLESSING_DATE, TOKEN
 		  FROM TBL_LUCK 
 		 WHERE TOKEN = #{token} 
-		   AND BLESSING_DATE >= (CURDATE() - INTERVAL 7 DAY)
 		   AND ROOM_ID = #{roomId} 
 		   <if test="blesserId != null and !''.equals(blesserId)">
 		   AND BLESSER_ID = #{blesserId}
@@ -82,20 +81,26 @@
 		   AND L.SEQ = #{luckSeq}
 	</select>
 	
-	<select id="countVaildTimeLuck" parameterType="string" resultType="int">
-		SELECT COUNT(*)
-		FROM TBL_LUCK
-		WHERE SEQ = #{luckSeq}
-		 AND BLESSING_DATE >= (CURRENT_TIME() - INTERVAL ${minutes} MINUTE) 
+	<select id="isVaildDateTimeLuck" parameterType="me.kakao.pay.common.domain.Luck" resultType="boolean">
+	<if test="expiredDays gt 0">
+ 		SELECT IF(BLESSING_DATE >= (NOW() - INTERVAL ${expiredDays} DAY), 'false', 'true') AS IS_EXPIRED
+	</if>
+	<if test="expiredMinutes gt 0">
+ 		SELECT IF(BLESSING_DATE >= (NOW() - INTERVAL ${expiredMinutes} MINUTE), 'false', 'true') AS IS_EXPIRED
+	</if>
+		  FROM TBL_LUCK L 
+		 WHERE TOKEN = #{token} 
+		   AND ROOM_ID = #{roomId} 
 	</select>
 	
 	<select id="selectLuckRecord" parameterType="me.kakao.pay.common.domain.Luck" resultType="me.kakao.pay.common.domain.LuckRecord">
  		SELECT 
- 		  IFNULL((SELECT SUM(D.AMOUNT) FROM TBL_LUCK_DETAIL D WHERE D.LUCK_SEQ = L.SEQ GROUP BY LUCK_SEQ), 0) AS TOTAL_GRABBED_AMOUNT,
+ 		  (SELECT IFNULL(SUM(TLD.AMOUNT), 0) FROM TBL_LUCK_GRAB_RECORD TLGR LEFT JOIN TBL_LUCK_DETAIL TLD ON TLGR.LUCK_DETAIL_SEQ = TLD.SEQ WHERE TLD.LUCK_SEQ = L.SEQ)  AS TOTAL_GRABBED_AMOUNT,
  		  IFNULL((SELECT COUNT(*) FROM TBL_LUCK_GRAB_RECORD R WHERE R.LUCK_SEQ = L.SEQ), 0) AS TOTAL_LUCKY_MEMBER_COUNT,
- 		  IF(BLESSING_DATE >= (CURDATE() - INTERVAL 7 DAY), 'TRUE', 'FALSE') AS IS_EXPIRED, 
 		  SEQ, BLESSER_ID, ROOM_ID , AMOUNT, 
-		  MAX_GRABBER_COUNT, BLESSING_DATE, TOKEN
+		  MAX_GRABBER_COUNT, BLESSING_DATE, TOKEN,
+		  DATE_FORMAT(BLESSING_DATE, '%Y-%m-%d') AS BLESSDATE, 
+		  DATE_FORMAT(BLESSING_DATE, '%H:%I') AS BLESSTIME
 		  FROM TBL_LUCK L 
 		 WHERE TOKEN = #{token} 
 		   AND ROOM_ID = #{roomId} 

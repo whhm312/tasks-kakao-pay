@@ -17,4 +17,6 @@ public class Luck {
 	private int maxGrabberCount;
 	private String token;
 	private Date blessingDate;
+	private int expiredDays;
+	private int expiredMinutes;
 }

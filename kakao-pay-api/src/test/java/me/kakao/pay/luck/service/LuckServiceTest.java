@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -89,12 +88,12 @@ public class LuckServiceTest {
 		assertEquals(luck.getAmount(), totalAmount);
 	}
 
-	@Disabled
 	@Test
 	public void testIsNotValidMember() {
-		String requestUserId = "";
+		String roomId = "xd334";
 		Luck luck = new Luck();
-		luckService.isNotValidMember(luck, requestUserId);
+		luck.setRoomId(roomId);
+		luckService.isNotValidMember(luck.getRoomId(), roomId);
 	}
 
 	@Test
@@ -102,7 +101,7 @@ public class LuckServiceTest {
 		String requestUserId = "11123";
 		Luck luck = new Luck();
 		luck.setSeq(27);
-		assertTrue(luckService.isDuplicatedGrab(luck, requestUserId));
+		assertTrue(luckService.isDuplicatedGrab(luck.getSeq(), requestUserId));
 	}
 
 	@Test
@@ -117,7 +116,9 @@ public class LuckServiceTest {
 	@Test
 	public void testIsOverTime() {
 		Luck luck = new Luck();
-		luck.setSeq(27);
+		luck.setRoomId("test_room");
+		luck.setToken("AGr");
+		luck.setExpiredMinutes(10);
 		assertTrue(luckService.isOverTime(luck));
 	}
 
@@ -127,6 +128,15 @@ public class LuckServiceTest {
 		luck.setSeq(27);
 		luck.setMaxGrabberCount(3);
 		assertTrue(luckService.isFullGrab(luck));
+	}
+
+	@Test
+	public void testIsOverDate() {
+		Luck luck = new Luck();
+		luck.setRoomId("X123");
+		luck.setToken("1Oe");
+		luck.setExpiredDays(7);
+		assertTrue(luckService.isOverDate(luck));
 	}
 
 }

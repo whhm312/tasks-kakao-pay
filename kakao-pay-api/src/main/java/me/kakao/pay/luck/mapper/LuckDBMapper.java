@@ -3,7 +3,6 @@ package me.kakao.pay.luck.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import me.kakao.pay.common.domain.Luck;
 import me.kakao.pay.common.domain.LuckDetail;
@@ -33,10 +32,12 @@ public interface LuckDBMapper {
 
 	public int countGrabRecord(int luckSeq);
 
-	public int countVaildTimeLuck(@Param("luckSeq") int luckSeq, @Param("minutes") int minutes);
+	public boolean isVaildDateTimeLuck(Luck luck);
 
 	public LuckRecord selectLuckRecord(Luck luck);
 
 	public List<LuckyMember> selectLuckGrabRecordBySeq(int luckSeq);
+
+	public Luck selectLuckByToken(String token);
 
 }

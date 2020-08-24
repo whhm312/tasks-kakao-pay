@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 public class LuckRecordsResponse {
 	private String blessTime;
+	private String blessDate;
 	private long blessAmount;
 	private long totalGrabbedAmount;
 	private int totalLuckyMemberCount;

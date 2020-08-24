@@ -18,9 +18,8 @@ import me.kakao.pay.common.exception.ExpiredLuckException;
 import me.kakao.pay.common.exception.FailedCreateTokenException;
 import me.kakao.pay.common.exception.FailedInsertLuckDetailException;
 import me.kakao.pay.common.exception.FailedInsertLuckException;
-import me.kakao.pay.common.exception.ForbiddenSearchException;
 import me.kakao.pay.common.exception.FullGrabException;
-import me.kakao.pay.common.exception.InvalidLuckException;
+import me.kakao.pay.common.exception.InvalidTokenException;
 import me.kakao.pay.common.exception.NotValidMemberException;
 import me.kakao.pay.luck.dao.LuckDAO;
 
@@ -28,8 +27,12 @@ import me.kakao.pay.luck.dao.LuckDAO;
 public class LuckService {
 	@Value("${token.generate.retry.count}")
 	private int RETRY_COUNT;
+
 	@Value("${token.expired.minute}")
 	private int EXPIRED_MINUTE;
+
+	@Value("${token.expired.days}")
+	private int EXPIRED_DAYS;
 
 	private LuckDAO luckDAO;
 
@@ -38,6 +41,8 @@ public class LuckService {
 	}
 
 	public String blessing(Luck luck) {
+		luck.setExpiredDays(EXPIRED_DAYS);
+		
 		for (int i = 0; i < RETRY_COUNT; i++) {
 
 			String token = TokenGenerator.get();
@@ -76,42 +81,13 @@ public class LuckService {
 
 	}
 
-	public boolean isUniqueToken(Luck blessing) {
-		int count = luckDAO.countSameToken(blessing);
-		return count < 1;
-	}
-
-	public long grab(Luck luck, String requestUserId) {
-		luck = luckDAO.selectLuck(luck);
-		
-		if (luck == null) {
-			throw new InvalidLuckException("Cannot find the luck.");
-		}
-
-		if (isNotValidMember(luck, requestUserId)) {
-			throw new NotValidMemberException(requestUserId + " is not the member of the chat.");
-		}
-
-		if (isDuplicatedGrab(luck, requestUserId)) {
-			throw new AlreadyGrabUserException(requestUserId + " is already grab the luck.");
-		}
-
-		if (isBlesser(luck, requestUserId)) {
-			throw new BlesserNotAllowGrabException("Blesser is not allow to grab blesser's luck.");
-		}
-
-		if (isOverTime(luck)) {
-			throw new ExpiredLuckException("The luck is expired time. {" + EXPIRED_MINUTE + "min.}");
-		}
-
-		if (isFullGrab(luck)) {
-			throw new FullGrabException("The luck is over to grab.");
-		}
+	public long grab(String token, String userId, String roomId) {
+		Luck luck = validateGrab(token, userId, roomId);
 
 		List<LuckDetail> luckDetails = luckDAO.selectVaildGrabLuckDetail(luck);
 
 		LuckGrabRecord record = new LuckGrabRecord();
-		record.setGrabUserId(requestUserId);
+		record.setGrabUserId(userId);
 		record.setLuckDetailSeq(luckDetails.get(0).getSeq());
 		record.setLuckSeq(luckDetails.get(0).getLuckSeq());
 
@@ -120,15 +96,78 @@ public class LuckService {
 		return luckDetails.get(0).getAmount();
 	}
 
-	// TODO 해당 대화방 인원인지 어떻게 체크할 것인가
-	public boolean isNotValidMember(Luck luck, String requestUserId) {
-		return false;
+	public LuckRecord getLuckRecords(Luck luck) {
+		if (isOverDate(luck)) {
+			throw new ExpiredLuckException("The luck is already expired date. {" + EXPIRED_DAYS + "days.}");
+		}
+
+		LuckRecord luckRecords = luckDAO.selectLuckRecord(luck);
+		if (luckRecords == null) {
+			throw new InvalidTokenException(
+					"Cannot find the luck. {X-USER-ID : " + luck.getBlesserId() + ", X-ROOM-ID : " + luck.getRoomId() + ", token : " + luck.getToken() + "}");
+		}
+
+		List<LuckyMember> luckyMembers = luckDAO.getLuckyMembers(luckRecords.getSeq());
+		if (luckyMembers == null) {
+			luckRecords.setLuckyMembers(new ArrayList<LuckyMember>());
+		} else {
+			luckRecords.setLuckyMembers(luckyMembers);
+		}
+
+		return luckRecords;
 	}
 
-	public boolean isDuplicatedGrab(Luck luck, String requestUserId) {
+	private Luck validateGrab(String token, String userId, String roomId) {
+		Luck condition = new Luck();
+		condition.setToken(token);
+		condition.setRoomId(roomId);
+		if (isOverDate(condition)) {
+			throw new ExpiredLuckException("The luck is already expired date. {" + EXPIRED_DAYS + "days.}");
+		}
+
+		if (isOverTime(condition)) {
+			throw new ExpiredLuckException("The luck is expired time. {" + EXPIRED_MINUTE + "min.}");
+		}
+
+		Luck luck = luckDAO.selectLuck(condition);
+
+		if (luck == null) {
+			throw new InvalidTokenException("Cannot find the luck by the token .{ " + token + "}");
+		}
+
+		if (isNotValidMember(luck.getRoomId(), roomId)) {
+			throw new NotValidMemberException(userId + " is not the member of the chat.");
+		}
+
+		if (isBlesser(luck, userId)) {
+			throw new BlesserNotAllowGrabException("Blesser is not allow to grab blesser's luck.");
+		}
+
+		int luckSeq = luck.getSeq();
+
+		if (isDuplicatedGrab(luckSeq, userId)) {
+			throw new AlreadyGrabUserException(userId + " is already grab the luck.");
+		}
+
+		if (isFullGrab(luck)) {
+			throw new FullGrabException("The luck is over to grab.");
+		}
+
+		return luck;
+	}
+
+	public boolean isUniqueToken(Luck luck) {
+		return luckDAO.countSameToken(luck) < 1;
+	}
+
+	public boolean isNotValidMember(String luckRoomId, String roomId) {
+		return !luckRoomId.equals(roomId);
+	}
+
+	public boolean isDuplicatedGrab(int seq, String userId) {
 		LuckGrabRecord record = new LuckGrabRecord();
-		record.setLuckSeq(luck.getSeq());
-		record.setGrabUserId(requestUserId);
+		record.setLuckSeq(seq);
+		record.setGrabUserId(userId);
 		record = luckDAO.selectLuckGrabRecord(record);
 		if (record == null) {
 			return false;
@@ -140,8 +179,8 @@ public class LuckService {
 		return luckDAO.countGrabRecord(luck.getSeq()) >= luck.getMaxGrabberCount();
 	}
 
-	public boolean isBlesser(Luck luck, String requestUserId) {
-		luck.setBlesserId(requestUserId);
+	public boolean isBlesser(Luck luck, String userId) {
+		luck.setBlesserId(userId);
 		Luck selectLuck = luckDAO.selectLuck(luck);
 		if (selectLuck == null) {
 			return false;
@@ -150,30 +189,14 @@ public class LuckService {
 	}
 
 	public boolean isOverTime(Luck luck) {
-		return luckDAO.countVaildTimeLuck(luck.getSeq(), EXPIRED_MINUTE) < 1;
+		luck.setExpiredMinutes(EXPIRED_MINUTE);
+		luck.setExpiredDays(0);
+		return luckDAO.isVaildDateTimeLuck(luck);
 	}
 
-	public LuckRecord getLuckRecords(Luck luck) {
-		LuckRecord luckRecords = luckDAO.selectLuckRecord(luck);
-		if (luckRecords == null) {
-			throw new InvalidLuckException("Cannot find the luck.");
-		}
-		
-		if (!luckRecords.getBlesserId().equals(luck.getBlesserId())) {
-			throw new ForbiddenSearchException("A luck can search only its owner.");
-		}
-
-		if (luckRecords.isExpried()) {
-			throw new ExpiredLuckException("The luck is already expired date.");
-		}
-
-		List<LuckyMember> luckyMembers = luckDAO.getLuckyMembers(luckRecords.getSeq());
-		if (luckyMembers == null) {
-			luckRecords.setLuckyMembers(new ArrayList<LuckyMember>());
-		} else {
-			luckRecords.setLuckyMembers(luckyMembers);
-		}
-		
-		return luckRecords;
+	public boolean isOverDate(Luck luck) {
+		luck.setExpiredDays(EXPIRED_DAYS);
+		luck.setExpiredMinutes(0);
+		return luckDAO.isVaildDateTimeLuck(luck);
 	}
 }

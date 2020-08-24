@@ -52,8 +52,7 @@ public class LuckController {
 
 	@PostMapping("/{token}/grab")
 	public ResponseEntity<GrabLuckResponse> grab(@RequestHeader HttpHeaders headers, @PathVariable(name = "token", required = true) String token) {
-		Luck luck = luckMapper.grabRequestToLuck(token, getRoomId(headers));
-		long grabbedAmount = luckService.grab(luck, getUserId(headers));
+		long grabbedAmount = luckService.grab(token, getUserId(headers), getRoomId(headers));
 
 		GrabLuckResponse response = new GrabLuckResponse();
 		response.setGrabbedAmount(grabbedAmount);

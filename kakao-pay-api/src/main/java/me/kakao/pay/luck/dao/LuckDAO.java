@@ -55,8 +55,8 @@ public class LuckDAO {
 		return luckDBMapper.countGrabRecord(luckSeq);
 	}
 
-	public int countVaildTimeLuck(int luckSeq, int minutes) {
-		return luckDBMapper.countVaildTimeLuck(luckSeq, minutes);
+	public boolean isVaildDateTimeLuck(Luck luck) {
+		return luckDBMapper.isVaildDateTimeLuck(luck);
 	}
 
 	public List<LuckyMember> getLuckyMembers(int luckSeq) {
@@ -66,5 +66,4 @@ public class LuckDAO {
 	public LuckRecord selectLuckRecord(Luck luck) {
 		return luckDBMapper.selectLuckRecord(luck);
 	}
-
 }

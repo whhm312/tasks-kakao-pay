@@ -1,6 +1,5 @@
 package me.kakao.pay.luck.mapper;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +19,6 @@ public interface LuckObjectMapper {
 	@Mappings({ @Mapping(target = "blesserId", source = "userId", defaultValue = ""), @Mapping(target = "roomId", source = "roomId", defaultValue = "") })
 	Luck blessRequestToLuck(BlessLuckRequest request, String userId, String roomId);
 
-	@Mappings({ @Mapping(target = "roomId", source = "roomId", defaultValue = "") })
-	Luck grabRequestToLuck(String token, String roomId);
-
 	@Mappings({ @Mapping(target = "blesserId", source = "userId", defaultValue = ""), @Mapping(target = "roomId", source = "roomId", defaultValue = "") })
 	Luck recordsRequestToLuck(String token, String userId, String roomId);
 
@@ -37,12 +33,8 @@ public interface LuckObjectMapper {
 		response.setTotalGrabbedAmount(luckRecords.getTotalGrabbedAmount());
 		response.setTotalLuckyMemberCount(luckRecords.getTotalLuckyMemberCount());
 		response.setLuckyMembers(luckyMembers);
-
-		if (luckRecords.getBlessingDate() != null) {
-			response.setBlessTime(new SimpleDateFormat("HH:mm").format(luckRecords.getBlessingDate()));
-		} else {
-			response.setBlessTime("");
-		}
+		response.setBlessTime(luckRecords.getBlessTime());
+		response.setBlessDate(luckRecords.getBlessDate());
 		return response;
 	}
 

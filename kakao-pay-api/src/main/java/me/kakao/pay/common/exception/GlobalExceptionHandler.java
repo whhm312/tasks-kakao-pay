@@ -98,8 +98,8 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(InvalidLuckException.class)
-	protected ResponseEntity<ErrorResponse> handlerInvalidLuckException(InvalidLuckException e) {
+	@ExceptionHandler(InvalidTokenException.class)
+	protected ResponseEntity<ErrorResponse> handlerInvalidLuckException(InvalidTokenException e) {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0006");
 		response.setMessage(e.getLocalizedMessage());
@@ -111,7 +111,7 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0007");
 		response.setMessage(e.getLocalizedMessage());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(ForbiddenSearchException.class)
