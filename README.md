@@ -79,3 +79,6 @@
 5. DAO 작성
 6. Maven test로 빌드하여 확인 후 Commit
 
+
+## 3. API 문서
+- Swagger로 작성되어 서버를 구동 후에 브라우저에서 http://localhost:9998 로 접속하면 확인 가능.
