@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import me.kakao.pay.common.domain.LuckRecord;
 import me.kakao.pay.common.domain.Luck;
+import me.kakao.pay.common.domain.LuckRecord;
 import me.kakao.pay.luck.mapper.LuckObjectMapper;
 import me.kakao.pay.luck.service.LuckService;
 import me.kakao.pay.luck.vo.BlessLuckRequest;
 import me.kakao.pay.luck.vo.BlessLuckResponse;
-import me.kakao.pay.luck.vo.LuckRecordsResponse;
 import me.kakao.pay.luck.vo.GrabLuckResponse;
+import me.kakao.pay.luck.vo.LuckRecordsResponse;
 
 @RestController
 @RequestMapping("/lucks")

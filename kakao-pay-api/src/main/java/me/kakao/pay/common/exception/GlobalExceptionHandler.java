@@ -3,8 +3,11 @@ package me.kakao.pay.common.exception;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,6 +19,17 @@ import me.kakao.pay.common.vo.NotValiedResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+	private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
+
+	@ExceptionHandler(Exception.class)
+	protected ResponseEntity<ErrorResponse> handleException(Exception e) {
+		logger.error(e);
+
+		ErrorResponse response = new ErrorResponse();
+		response.setCode("E9999");
+		response.setMessage("This is undefined error, please contact to us.");
+		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 
 	@ExceptionHandler(FailedCreateTokenException.class)
 	protected ResponseEntity<ErrorResponse> handleDuplicatedTokenException(FailedCreateTokenException e) {
@@ -38,6 +52,14 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("E0003");
 		response.setMessage(e.getLocalizedMessage());
+		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(CannotGetJdbcConnectionException.class)
+	protected ResponseEntity<ErrorResponse> handlerCannotGetJdbcConnectionException(CannotGetJdbcConnectionException e) {
+		ErrorResponse response = new ErrorResponse();
+		response.setCode("E0004");
+		response.setMessage("DB Connection Error.");
 		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
@@ -82,8 +104,8 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(ExpiredLuckException.class)
-	protected ResponseEntity<ErrorResponse> handlerExpiredLuckException(ExpiredLuckException e) {
+	@ExceptionHandler(ExpiredTimeLuckException.class)
+	protected ResponseEntity<ErrorResponse> handlerExpiredLuckException(ExpiredTimeLuckException e) {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0004");
 		response.setMessage(e.getLocalizedMessage());
@@ -103,7 +125,7 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0006");
 		response.setMessage(e.getLocalizedMessage());
-		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(NotValidMemberException.class)
@@ -111,7 +133,7 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0007");
 		response.setMessage(e.getLocalizedMessage());
-		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(ForbiddenSearchException.class)
@@ -119,7 +141,14 @@ public class GlobalExceptionHandler {
 		ErrorResponse response = new ErrorResponse();
 		response.setCode("B0008");
 		response.setMessage(e.getLocalizedMessage());
-		return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 	}
 
+	@ExceptionHandler(ExpiredDateLuckException.class)
+	protected ResponseEntity<ErrorResponse> handlerExpiredDateLuckException(ExpiredDateLuckException e) {
+		ErrorResponse response = new ErrorResponse();
+		response.setCode("B0009");
+		response.setMessage(e.getLocalizedMessage());
+		return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
 }

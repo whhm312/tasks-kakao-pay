@@ -1,0 +1,349 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "카카오페이 과제",
+    "version": "1.0",
+    "title": "카카오페이 뿌리기 기능 구현하기",
+    "contact": {
+      "name": "김혜민",
+      "url": "https://blog.naver.com/whily312",
+      "email": "whily312@naver.com"
+    },
+    "license": {
+      "name": "GPL"
+    }
+  },
+  "host": "localhost:9998",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "뿌리기 APIs",
+      "description": "뿌리기, 받기, 조회 구현"
+    }
+  ],
+  "paths": {
+    "/lucks/bless": {
+      "post": {
+        "tags": [
+          "뿌리기 APIs"
+        ],
+        "summary": "뿌리기 API",
+        "description": "Header를 통해 뿌리기 할 사용자 정보와 뿌리기가 된 채팅방 정보를 받고, 뿌릴 금액과 받을 인원수를 받아서 처리 후 토큰 정보를 리턴한다.",
+        "operationId": "blessUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-USER-ID",
+            "description": "사용자",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "header",
+            "name": "X-ROOM-ID",
+            "description": "사용자가 속한 대화방",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "BlessLuckRequest",
+            "description": "뿌리기 요청시 필요한 정보",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BlessLuckRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/BlessLuckResponse"
+            }
+          },
+          "500": {
+            "description": "Intenal Server Error"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/lucks/{token}/grab": {
+      "post": {
+        "tags": [
+          "뿌리기 APIs"
+        ],
+        "summary": "받기 API",
+        "description": "Header를 통해 받을 사용자 정보와 채팅방 정보와 뿌리기의 토큰 정보를 받아 처리한다.",
+        "operationId": "grabUsingPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-USER-ID",
+            "description": "사용자",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "header",
+            "name": "X-ROOM-ID",
+            "description": "사용자가 속한 대화방",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "path",
+            "description": "영문자와 숫자로 이루어진 세자리 고유한 뿌리기 토큰",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "schema": {
+              "$ref": "#/definitions/GrabLuckResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Intenal Server Error"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/lucks/{token}": {
+      "get": {
+        "tags": [
+          "뿌리기 APIs"
+        ],
+        "summary": "조회 API",
+        "description": "Header를 통해 뿌리기 한 사용자 정보와 뿌리기가 된 채팅방 정보를 받고, 뿌리기 토큰을 받아 처리 후 결과를 리턴한다.",
+        "operationId": "getLuckRecordsUsingGET",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-USER-ID",
+            "description": "사용자",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "header",
+            "name": "X-ROOM-ID",
+            "description": "사용자가 속한 대화방",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "path",
+            "description": "영문자와 숫자로 이루어진 세자리 고유한 뿌리기 토큰",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/LuckRecordsResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Intenal Server Error"
+          }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "definitions": {
+    "BlessLuckRequest": {
+      "type": "object",
+      "required": [
+        "amount",
+        "maxGrabberCount"
+      ],
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "description": "뿌릴 금액",
+          "minimum": 1,
+          "exclusiveMinimum": false
+        },
+        "maxGrabberCount": {
+          "type": "integer",
+          "format": "int32",
+          "description": "뿌릴 인원",
+          "minimum": 1,
+          "exclusiveMinimum": false
+        }
+      },
+      "title": "BlessLuckRequest",
+      "description": "뿌리기 요청"
+    },
+    "BlessLuckResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "example": "D3x",
+          "description": "영문자와 숫자로 이루어진 세자리 고유한 뿌리기 토큰"
+        }
+      },
+      "title": "BlessLuckResponse",
+      "description": "뿌리기 결과"
+    },
+    "GrabLuckResponse": {
+      "type": "object",
+      "properties": {
+        "grabbedAmount": {
+          "type": "integer",
+          "format": "int64",
+          "example": 10000,
+          "description": "받은 금액"
+        }
+      },
+      "title": "GrabLuckResponse",
+      "description": "받기 결과"
+    },
+    "LuckRecordsResponse": {
+      "type": "object",
+      "properties": {
+        "blessDate": {
+          "type": "string",
+          "example": "2020-08-24",
+          "description": "뿌린 날짜"
+        },
+        "blessTime": {
+          "type": "string",
+          "example": "22:39",
+          "description": "뿌린 시간"
+        },
+        "blessAmount": {
+          "type": "integer",
+          "format": "int64",
+          "example": 50000,
+          "description": "뿌린 금액"
+        },
+        "totalGrabbedAmount": {
+          "type": "integer",
+          "format": "int64",
+          "example": 30000,
+          "description": "받기 완료된 금액"
+        },
+        "totalLuckyMemberCount": {
+          "type": "integer",
+          "format": "int32",
+          "example": 3,
+          "description": "받기 완료된 인원수"
+        },
+        "luckyMembers": {
+          "type": "array",
+          "description": "받기 완료된 정보",
+          "items": {
+            "$ref": "#/definitions/LuckyMemberResponse"
+          }
+        }
+      },
+      "title": "LuckRecordsResponse",
+      "description": "조회 결과"
+    },
+    "LuckyMemberResponse": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int64",
+          "example": 10000,
+          "description": "받은 금액"
+        },
+        "userId": {
+          "type": "string",
+          "example": "test123",
+          "description": "받은 사용자 아이디"
+        }
+      },
+      "title": "LuckyMemberResponse",
+      "description": "받기 완료된 정보 결과"
+    },
+    "ErrorResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "E0001",
+          "description": "에러 코드"
+        },
+        "message": {
+          "type": "string",
+          "example": "3 times tried to create token but it's failed.",
+          "description": "에러 메세지(영문)"
+        }
+      },
+      "title": "ErrorResponse",
+      "description": "에러 결과 :\n\n| code | message|\n|-------|-----------------------------------------------|\n| E0001 | 3 times tried to create token but it''s failed.|\n| E0002 | Failed to insert luck.|\n| E0003 | Failed to insert luck detail.|\n| B0002 | Blesser is already grab the luck.|\n| B0003 | Blesser is not allow to grab blesser's luck.|\n| B0004 | The luck is expired time. {10min.}|\n| B0005 | The luck is over to grab.|\n| B0006 | Cannot find the luck by the token. {Ds5}|\n| B0006 | Cannot find the luck. {X-USER-ID : 0000, X-ROOM-ID : xxx, token : Ds5}|\n| B0007 | 0000 is not the member of the chat.|\n| B0008 | The luck is already expired date. {7days}|"
+    },
+    "NotValiedResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "example": "B0001",
+          "description": "에러 코드"
+        },
+        "message": {
+          "type": "string",
+          "example": "Not valid parameters' values.",
+          "description": "에러 메세지"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": "[maxGrabberCount] 1 이상이어야 합니다 {0}"
+          }
+        }
+      },
+      "title": "NotValiedResponse",
+      "description": "파라메터 유효성 체크 후 에러 결과"
+    }
+  }
+}

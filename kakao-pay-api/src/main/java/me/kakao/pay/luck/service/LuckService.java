@@ -14,7 +14,8 @@ import me.kakao.pay.common.domain.LuckRecord;
 import me.kakao.pay.common.domain.LuckyMember;
 import me.kakao.pay.common.exception.AlreadyGrabUserException;
 import me.kakao.pay.common.exception.BlesserNotAllowGrabException;
-import me.kakao.pay.common.exception.ExpiredLuckException;
+import me.kakao.pay.common.exception.ExpiredDateLuckException;
+import me.kakao.pay.common.exception.ExpiredTimeLuckException;
 import me.kakao.pay.common.exception.FailedCreateTokenException;
 import me.kakao.pay.common.exception.FailedInsertLuckDetailException;
 import me.kakao.pay.common.exception.FailedInsertLuckException;
@@ -98,7 +99,7 @@ public class LuckService {
 
 	public LuckRecord getLuckRecords(Luck luck) {
 		if (isOverDate(luck)) {
-			throw new ExpiredLuckException("The luck is already expired date. {" + EXPIRED_DAYS + "days.}");
+			throw new ExpiredTimeLuckException("The luck is already expired date. {" + EXPIRED_DAYS + "days}");
 		}
 
 		LuckRecord luckRecords = luckDAO.selectLuckRecord(luck);
@@ -122,11 +123,11 @@ public class LuckService {
 		condition.setToken(token);
 		condition.setRoomId(roomId);
 		if (isOverDate(condition)) {
-			throw new ExpiredLuckException("The luck is already expired date. {" + EXPIRED_DAYS + "days}");
+			throw new ExpiredDateLuckException("The luck is already expired date. {" + EXPIRED_DAYS + "days}");
 		}
 
 		if (isOverTime(condition)) {
-			throw new ExpiredLuckException("The luck is expired time. {" + EXPIRED_MINUTE + "min.}");
+			throw new ExpiredTimeLuckException("The luck is expired time. {" + EXPIRED_MINUTE + "min.}");
 		}
 
 		Luck luck = luckDAO.selectLuck(condition);
